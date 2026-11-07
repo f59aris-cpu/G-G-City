@@ -1,0 +1,68 @@
+{
+  "version": 1,
+  "matching": {
+    "trim": true,
+    "collapseSpaces": true,
+    "caseSensitive": true,
+    "note": "Before comparing: trim spaces at the start and end, and turn repeated spaces into one. Upper and lower case matter, because Git cares about them too."
+  },
+  "boxStates": {
+    "empty": "A plain wooden box locked by a hiding spell. Git can't see it.",
+    "initialized": "The spell is broken: the lid is open and a .git sticker glows on the box."
+  },
+  "stations": [
+    {
+      "id": "workshop",
+      "order": 1,
+      "title": "The Workshop",
+      "background": "scenes/workshop.png",
+      "story": "The cat arrives at its workshop, a bit lost. Its brand-new software is hidden inside a plain wooden box by a hiding spell, so Git can't see it.",
+      "lessons": [
+        {
+          "id": "workshop-init",
+          "order": 1,
+          "concept": "Create a new repository",
+          "command": "git init",
+          "accepted": [
+            "git init",
+            "git init ."
+          ],
+          "boxStateBefore": "empty",
+          "boxStateAfter": "initialized",
+          "boxLabel": ".git",
+          "cat": {
+            "intro": "Hey code traveler! I'm a bit lost... and someone used magic to hide my new software in this box!",
+            "task": "Can you cast the spell that lets Git see inside it?",
+            "hint": "Psst... every Git spell starts with git. The second word is short for \"initialize\", and it's only 4 letters!",
+            "success": "WOW, you have real magical powers! The spell is broken: a hidden .git folder appeared, so Git can see my software and remember every change now. I wanna be friends with you ^_^",
+            "failure": "Hmm... the box didn't even blink. That's not the right spell. Start with git, then the word that sets it up!"
+          },
+          "commonMistakes": [
+            {
+              "input": "git int",
+              "feedback": "Sooo close! Your spell is missing one tiny letter in the second word."
+            },
+            {
+              "input": "git initialize",
+              "feedback": "Right idea, but Git likes its spells short! Try the 4-letter version."
+            },
+            {
+              "input": "init",
+              "feedback": "Every Git spell needs its magic word first: git!"
+            },
+            {
+              "input": "Git init",
+              "feedback": "Careful, traveler! Spells are case-sensitive. Write git in small letters."
+            },
+            {
+              "input": "git start",
+              "feedback": "There's no start spell in Git's spellbook... think of a word that means \"set up\"."
+            }
+          ],
+          "verifiedBy": "",
+          "verifiedOn": ""
+        }
+      ]
+    }
+  ]
+}
