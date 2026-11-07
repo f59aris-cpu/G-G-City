@@ -1,0 +1,173 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>S2 Scenes Test</title>
+  <style>
+    body { margin: 0; padding: 24px; background: #15171b; color: #e9edf2;
+      font: 15px system-ui, sans-serif; }
+    .wrap { max-width: 900px; margin: 0 auto; display: grid; gap: 16px; }
+    .controls { display: flex; gap: 10px; align-items: center; }
+    button { font: 600 14px system-ui, sans-serif; padding: 8px 18px; border: 0;
+      border-radius: 999px; background: #f5c142; color: #1d2127; cursor: pointer; }
+    button:disabled { opacity: .4; cursor: default; }
+    #status { color: #9aa5b3; font-size: 14px; }
+
+    /* Test-only placeholders (real cat from C1, box from C3, backgrounds from S1) */
+    .actor { display: flex; flex-direction: column; align-items: center; gap: 6px; }
+    .bubble { direction: rtl; max-width: 220px; background: #fff; color: #222;
+      border: 2px solid #333; border-radius: 12px; padding: 6px 10px;
+      font: 12px/1.6 system-ui, sans-serif; position: relative; text-align: right;
+      transition: opacity .2s; }
+    .bubble.hidden { opacity: 0; }
+    .bubble::after { content: ""; position: absolute; bottom: -8px; left: 50%;
+      width: 12px; height: 12px; margin-left: -6px; background: #fff;
+      border-right: 2px solid #333; border-bottom: 2px solid #333; transform: rotate(45deg); }
+    .cat { width: clamp(110px, 18vw, 170px); height: auto; display: block; }
+    .box { width: 54px; height: 44px; background: #a8743f; border: 2px solid #6b4520;
+      border-radius: 4px; display: grid; place-items: center; align-self: flex-end; }
+    .box span { background: #fff; color: #333; font: 10px monospace; padding: 0 4px;
+      border-radius: 2px; direction: ltr; }
+    .deco { position: absolute; background: #e8d2ab; }
+    .deco.door { background: #6b4a2e; border-radius: 6px 6px 0 0; }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <h1>اختبار الانتقال بين المحطات (S2)</h1>
+    <div id="app"></div>
+    <div class="controls">
+      <button id="prev" type="button">السابق</button>
+      <button id="next" type="button">التالي</button>
+      <span id="status"></span>
+    </div>
+  </div>
+
+  <script src="scenes.js"></script>
+  <script>
+    // Placeholder stations, used until lessons.json and S1's backgrounds are in the repo
+    const PLACEHOLDER = [
+      { title: 'الورشة', background: '' },
+      { title: 'الفناء الخلفي', background: '' },
+      { title: 'موقف الشحن', background: '' },
+      { title: 'GitHub', background: '' }
+    ];
+
+    // Plain wall + floor; identical on every section so the strip looks continuous
+    const PLAIN_BG = 'linear-gradient(to bottom, #c8a175 0 64%, #8b6b4b 64% 100%)';
+
+    // Simple scenery so you can see the strip scrolling (window, door, window, ...)
+    const DECO = [
+      { left: '9%', top: '14%', width: '26%', height: '28%' },
+      { left: '60%', top: '22%', width: '14%', height: '42%', door: true },
+      { left: '15%', top: '14%', width: '18%', height: '24%' },
+      { left: '55%', top: '12%', width: '30%', height: '30%' }
+    ];
+
+    // Test dialogue (P1's real text will replace this)
+    const TEST_TEXT = [
+      'رائع! ظهر مجلد ‎.git‎ المخفي داخل الصندوق. من الآن Git يراقب كل تغيير في الورشة.',
+      'مرحبًا بك في الفناء الخلفي! هنا نجهّز الملفات بالأمر ‎git add‎ قبل أن نحفظها.',
+      'وصلنا إلى موقف الشحن. الصندوق جاهز للإرسال.',
+      'أحسنت! وصل الصندوق إلى GitHub.'
+    ];
+
+    // C1's layered cat SVG: loaded from ../cat/cat.svg, or a local test copy until C1 pushes it
+    async function loadCatSVG() {
+      for (const url of ['../cat/cat.svg', 'test-cat.svg']) {
+        try { const r = await fetch(url); if (r.ok) return await r.text(); } catch {}
+      }
+      return '';
+    }
+
+    async function loadStations() {
+      try {
+        const res = await fetch('../data/lessons.json');
+        if (!res.ok) throw new Error(res.status);
+        const data = await res.json();
+        const list = Array.isArray(data) ? data : (data.stations || []);
+        if (list.length < 2) throw new Error('need at least 2 stations');
+        // Background paths in JSON are relative to index.html, so prefix with ../
+        return list.map(s => ({ ...s, background: s.background ? '../' + s.background : '' }));
+      } catch (err) {
+        console.warn('Using placeholder stations:', err);
+        return PLACEHOLDER;
+      }
+    }
+
+    (async () => {
+      const stations = await loadStations();
+      const catSVG = await loadCatSVG();
+      const scenes = createScenes(document.getElementById('app'), stations);
+      window.scenes = scenes; // for testing from the console
+
+      // Plain background + scenery on each section of the strip
+      document.querySelectorAll('.gg-station').forEach((section, i) => {
+        const img = section.style.backgroundImage;
+        section.style.backgroundImage = img ? `${img}, ${PLAIN_BG}` : PLAIN_BG;
+        const d = DECO[i % DECO.length];
+        const deco = document.createElement('div');
+        deco.className = 'deco' + (d.door ? ' door' : '');
+        Object.assign(deco.style, { left: d.left, top: d.top, width: d.width, height: d.height });
+        section.prepend(deco);
+      });
+
+      // ONE cat + ONE box on the shared stage; they stay on screen while the strip scrolls
+      const box = document.createElement('div');
+      box.className = 'box';
+      box.innerHTML = '<span>.git</span>';
+
+      const actor = document.createElement('div');
+      actor.className = 'actor';
+      const bubble = document.createElement('div');
+      bubble.className = 'bubble';
+      actor.appendChild(bubble);
+      // Inline the SVG (not <img>) so we can switch its pose with data-pose
+      actor.insertAdjacentHTML('beforeend', catSVG);
+      const cat = actor.querySelector('svg');
+      if (cat) {
+        cat.removeAttribute('width'); cat.removeAttribute('height');
+        cat.classList.add('cat');
+      }
+      scenes.stage().append(box, actor);
+
+      const say = (i) => { bubble.textContent = TEST_TEXT[i] || TEST_TEXT[TEST_TEXT.length - 1]; };
+      say(0);
+
+      // Same pattern S3 will use: cat.walk(); await scenes.goTo(i); cat.idle();
+      // C1's SVG has built-in poses: data-pose="walk" loops the walk, "idle" stands still
+      const walk = () => { if (cat) cat.dataset.pose = 'walk'; bubble.classList.add('hidden'); };
+      const idle = () => { if (cat) cat.dataset.pose = 'idle'; bubble.classList.remove('hidden'); };
+
+      const prevBtn = document.getElementById('prev');
+      const nextBtn = document.getElementById('next');
+      const status = document.getElementById('status');
+
+      function update(text) {
+        const i = scenes.current();
+        prevBtn.disabled = i === 0;
+        nextBtn.disabled = i === stations.length - 1;
+        status.textContent = text || `المحطة ${i + 1} من ${stations.length}`;
+      }
+
+      async function move(fn, dir) {
+        prevBtn.disabled = nextBtn.disabled = true;
+        update('جاري الانتقال…');
+        if (cat) cat.style.transform = dir < 0 ? 'scaleX(-1)' : ''; // face the walking direction
+        walk();
+        const i = await fn(); // resolves only after the scroll finishes
+        idle();
+        if (cat) cat.style.transform = '';
+        say(i);
+        console.log('arrived at station', i);
+        update();
+      }
+
+      prevBtn.addEventListener('click', () => move(scenes.prev, -1));
+      nextBtn.addEventListener('click', () => move(scenes.next, 1));
+      update();
+    })();
+  </script>
+</body>
+</html>
