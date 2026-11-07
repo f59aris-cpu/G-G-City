@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>C3 - Box Component Test</title>
+  <style>
+    body { font-family: sans-serif; padding: 20px; background: #f4f4f9; color: #333; }
+    #box-container { width: 300px; height: 300px; margin: 0 auto 20px; border: 1px solid #ccc; background: #fff; border-radius: 4px; display: flex; align-items: center; justify-content: center; }
+    .gg-command { display: flex; gap: 8px; align-items: center; background: #222; color: #fff; padding: 10px; border-radius: 4px; }
+    .gg-command input { flex: 1; padding: 6px 10px; background: #333; color: #fff; border: 1px solid #555; font-family: monospace; }
+    .gg-command button { padding: 6px 14px; background: #007acc; color: #fff; border: none; border-radius: 3px; cursor: pointer; }
+    .gg-command button:disabled, .gg-command input:disabled { opacity: 0.5; cursor: not-allowed; }
+    #log-output { margin-top: 20px; font-family: monospace; font-size: 13px; white-space: pre-wrap; background: #222; color: #eee; padding: 12px; border-radius: 4px; }
+  </style>
+</head>
+<body>
+  <h2>C3 Component Test Page</h2>
+  <div id="box-container"></div>
+  <div id="command-container"></div>
+  <div id="log-output"></div>
+
+  <script type="module">
+    import { createBox, checkCommand, createCommandBox } from './box.js';
+
+    // Standard fallback lesson data
+    const mockLesson = {
+      "id": "workshop-init",
+      "accepted": ["git init", "git init ."],
+      "boxStateBefore": "empty",
+      "boxStateAfter": "initialized",
+      "boxLabel": ".git",
+      "cat": {
+        "intro": "Please enter the initialization command.",
+        "hint": "Use the Git command to initialize a repository.",
+        "success": "Repository initialized successfully.",
+        "failure": "Invalid command syntax."
+      },
+      "commonMistakes": [
+        { "input": "git int", "feedback": "Spelling mistake in command name." },
+        { "input": "Git init", "feedback": "Commands are case-sensitive. Use lowercase." }
+      ]
+    };
+
+    async function initTest() {
+      const log = (msg) => {
+        document.getElementById('log-output').textContent += msg + '\n';
+      };
+
+      let lesson = mockLesson;
+
+      // Try loading data from external lessons file
+      try {
+        let res = await fetch('../data/lessons.json');
+        if (!res.ok) res = await fetch('./data/lessons.json');
+        if (res.ok) {
+          const data = await res.json();
+          lesson = data.stations[0].lessons[0];
+          log('Loaded lessons.json successfully.');
+        } else {
+          log('Could not fetch lessons.json. Using local test data.');
+        }
+      } catch (err) {
+        log('Fetch error. Using local test data.');
+      }
+
+      log('\n--- Unit Tests for checkCommand ---');
+      log('Test 1 (Valid input): ' + JSON.stringify(checkCommand('git init', lesson)));
+      log('Test 2 (Extra spaces): ' + JSON.stringify(checkCommand('  git init  ', lesson)));
+      log('Test 3 (Capital letter): ' + JSON.stringify(checkCommand('Git init', lesson)));
+      log('Test 4 (Typo mistake): ' + JSON.stringify(checkCommand('git int', lesson)));
+      log('Test 5 (Empty string): ' + JSON.stringify(checkCommand('', lesson)));
+      log('-----------------------------------\n');
+
+      // Setup the Box component
+      const boxContainer = document.getElementById('box-container');
+      const box = createBox(boxContainer, 'box.svg');
+      await box.ready;
+      box.setState(lesson.boxStateBefore || 'empty');
+
+      // Setup the CommandBox component
+      const cmdContainer = document.getElementById('command-container');
+      createCommandBox(cmdContainer, lesson, async (result) => {
+        log(`[Run Event] Valid: ${result.ok} | Message: "${result.feedback}"`);
+        
+        // Wait 1.5 seconds to simulate response delay
+        await new Promise(r => setTimeout(r, 1500));
+        
+        if (result.ok) {
+          box.setState(lesson.boxStateAfter || 'initialized');
+          box.setLabel(lesson.boxLabel || '.git');
+          log('Box state updated to: ' + (lesson.boxStateAfter || 'initialized'));
+        }
+      });
+    }
+
+    initTest();
+  </script>
+</body>
+</html>

@@ -1,0 +1,52 @@
+
+<svg xmlns="http://www.w3.org/2000/svg"
+     viewBox="0 0 200 200"
+     width="100%"
+     height="100%">
+
+  <!-- Main box body: Always visible -->
+  <g id="box-base">
+    <rect x="40" y="80" width="120" height="90"
+          fill="#c28e5c"
+          stroke="#5c3a1e"
+          stroke-width="4"/>
+  </g>
+
+  <!-- Closed lid: Only when state = empty -->
+  <g id="box-lid-closed" data-show="empty">
+    <rect x="35" y="65" width="130" height="20"
+          fill="#a67343"
+          stroke="#5c3a1e"
+          stroke-width="4"/>
+  </g>
+
+  <!-- Open lid and sticker: Only when state = initialized -->
+  <g id="box-lid-open" data-show="initialized">
+
+    <!-- Open lid -->
+    <polygon points="35,65 20,25 180,25 165,65"
+             fill="#a67343"
+             stroke="#5c3a1e"
+             stroke-width="4"/>
+
+    <!-- Inside of box -->
+    <rect x="45" y="65" width="110" height="15"
+          fill="#4a2e16"/>
+
+    <!-- Sticker -->
+    <rect x="70" y="110" width="60" height="30"
+          fill="#ffffff"
+          stroke="#333333"
+          stroke-width="2"/>
+
+    <!-- Dynamic label -->
+    <text id="box-label"
+          x="100" y="130"
+          font-family="monospace"
+          font-size="14"
+          font-weight="bold"
+          text-anchor="middle"
+          fill="#333333">.git</text>
+
+  </g>
+</svg>
