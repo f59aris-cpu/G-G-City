@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>G&G City</title>
+    <style>
+        .gg-stage .gg-cat { width: 17%; }
+        .gg-stage .gg-box { width: 15%; }
+        #command {
+            background-color: #1e1e1e;
+            color: #00ff00;
+            padding: 15px;
+            font-family: monospace;
+            min-height: 50px;
+            border: 2px solid #333;
+            border-radius: 5px;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div id="screen"></div>
+    <div id="command"></div>
+
+    <script type="module" src="scenes/scenes.js"></script>
+<script type="module" src="cat/cat.js"></script>
+<script type="module" src="box/box.js"></script>
+    <script>
+        const SAVE_KEY = 'gg-city-progress';
+
+        function loadProgress() {
+            try { return Number(localStorage.getItem(SAVE_KEY)) || 0; } 
+            catch { return 0; }
+        }
+
+        function saveProgress(n) {
+            try { localStorage.setItem(SAVE_KEY, String(n)); } 
+            catch {}
+        }
+
+        async function start() {
+            const data = await fetch('data/lessons.json').then(r => r.json());
+            const stations = [...data.stations].sort((a, b) => a.order - b.order);
+
+            const steps = stations.flatMap((st, s) =>
+                [...st.lessons].sort((a, b) => a.order - b.order).map(lesson => ({station: s, lesson}))
+            );
+
+            const scenes = createScenes(document.getElementById('screen'), stations);
+            const cmdHost = document.getElementById('command');
+            const cat = createCat(scenes.stage(0));
+            const box = createBox(scenes.stage(0));
+
+            await Promise.all([cat.ready, box.ready]);
+
+            async function showStep(i) {
+                if (i >= steps.length) { 
+                    cmdHost.innerHTML = ''; 
+                    cat.say('أنهيت كل المحطات', 10);
+                    return; 
+                }
+
+                const { station, lesson } = steps[i];
+
+                if (scenes.current() != station) {
+                    cat.walk();
+                }
+                await scenes.goTo(station);
+                cat.idle();
+
+                scenes.stage(station).append(box.el, cat.el);
+                box.setState(lesson.boxStateBefore);
+                cat.say(lesson.cat.intro + '\n' + lesson.cat.task, 0);
+                cmdHost.innerHTML = '';
+
+                createCommandBox(cmdHost, lesson, async result => {
+                    await cat.charge();
+                    await cat.spell(result.ok);
+                    cat.say(result.feedback, 0);
+                    
+                    if (!result.ok) return;
+                    
+                    box.setState(lesson.boxStateAfter);
+                    if (lesson.boxLabel) box.setLabel(lesson.boxLabel);
+                    
+                    saveProgress(i + 1);
+                    setTimeout(() => showStep(i + 1), 2500);
+                }, data.matching).focus();
+            }
+
+            showStep(loadProgress());
+        }
+
+        start();
+    </script>
+</body>
+</html>
