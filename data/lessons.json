@@ -1,17 +1,25 @@
 {
-  "version": 1,
+  "_comment": "G&G City lessons · owner: P1 (Product Owner). All text the learner sees lives here, never in the code. Order of play: stations by 'order', then lessons by 'order'. Fields that start with _comment are notes for the team; the code ignores them. finishMessage is what the cat says after the last lesson.",
+  "version": 2,
   "matching": {
+    "_comment": "How typed commands are compared before checking (used by checkCommand in box/box.js).",
     "trim": true,
     "collapseSpaces": true,
     "caseSensitive": true,
     "note": "Before comparing: trim spaces at the start and end, and turn repeated spaces into one. Upper and lower case matter, because Git cares about them too."
   },
   "boxStates": {
+    "_comment": "Every state the box can be in. C3 draws each one in box/box.svg with data-show=\"state\".",
     "empty": "A plain wooden box locked by a hiding spell. Git can't see it.",
-    "initialized": "The spell is broken: the lid is open and a .git sticker glows on the box."
+    "initialized": "The spell is broken: the lid is open and a .git sticker glows on the box.",
+    "staged": "The box waits in the back yard, glowing gold: its changes are picked and ready to be saved.",
+    "committed": "A sticker with a short message is stuck on the box: this version is saved forever.",
+    "pushed": "The box rode the truck to GitHub. A copy now lives in the remote repository."
   },
+  "finishMessage": "You did it! My software rode the truck all the way to GitHub. Next time, we visit the big GitHub building together!",
   "stations": [
     {
+      "_comment": "STATION 1 · THE WORKSHOP (Working Directory) · Sprint 1. The cat's software is hidden in a box. One lesson: git init.",
       "id": "workshop",
       "order": 1,
       "title": "The Workshop",
@@ -19,6 +27,7 @@
       "story": "The cat arrives at its workshop, a bit lost. Its brand-new software is hidden inside a plain wooden box by a hiding spell, so Git can't see it.",
       "lessons": [
         {
+          "_comment": "Station 1 · Lesson 1/1 · git init: turns the folder into a repository. Box: empty → initialized.",
           "id": "workshop-init",
           "order": 1,
           "concept": "Create a new repository",
@@ -61,6 +70,283 @@
           ],
           "verifiedBy": "P3",
           "verifiedOn": "7-11-2026"
+        }
+      ]
+    },
+    {
+      "_comment": "STATION 2 · THE BACK YARD (Staging Area) · Sprint 2. Two lessons in order: git add (put files in the box), then git commit -m (stick a message label on it).",
+      "id": "backyard",
+      "order": 2,
+      "title": "The Back Yard",
+      "background": "scenes/backyard.png",
+      "story": "The cat carries its box to the back yard, the Staging Area. Here the box gets ready: first we pick what goes in it (git add), then we stick a label on it that says what changed (git commit).",
+      "lessons": [
+        {
+          "_comment": "Station 2 · Lesson 1/2 · git add: puts all changed files in the Staging Area. Box: initialized → staged (glows).",
+          "id": "backyard-add",
+          "order": 1,
+          "concept": "Stage changes for the next commit",
+          "command": "git add .",
+          "accepted": [
+            "git add .",
+            "git add -A",
+            "git add --all"
+          ],
+          "boxStateBefore": "initialized",
+          "boxStateAfter": "staged",
+          "cat": {
+            "intro": "Welcome to my back yard! Before Git saves my software, we have to put the files in the box. Git calls this place the Staging Area.",
+            "task": "Cast the spell that puts ALL my files in the box.",
+            "hint": "Start with git, then a word that means put in, then a dot. The dot means everything in this folder!",
+            "success": "Look, the box is glowing! All my files are in it and ready to be saved.",
+            "failure": "Hmm, nothing moved. Try git, then add, then a dot."
+          },
+          "commonMistakes": [
+            {
+              "input": "git add",
+              "feedback": "Add what? Git needs to know which files. A dot means all of them!"
+            },
+            {
+              "input": "git ad .",
+              "feedback": "So close! The second word is missing a letter."
+            },
+            {
+              "input": "Git add .",
+              "feedback": "Careful! Spells are case-sensitive. Write git in small letters."
+            },
+            {
+              "input": "git add.",
+              "feedback": "Almost! Put a space between add and the dot."
+            },
+            {
+              "input": "add .",
+              "feedback": "Every Git spell starts with its magic word: git!"
+            }
+          ],
+          "verifiedBy": "",
+          "verifiedOn": ""
+        },
+        {
+          "_comment": "Station 2 · Lesson 2/2 · git commit -m: saves a version with a message. Box: staged → committed (sticker shows the message). acceptedPatterns is ready for C3: any non-empty message.",
+          "id": "backyard-commit",
+          "order": 2,
+          "concept": "Save a version with a message",
+          "command": "git commit -m \"first version\"",
+          "accepted": [
+            "git commit -m \"first version\"",
+            "git commit -m 'first version'",
+            "git commit -m \"First version\"",
+            "git commit -m 'First version'"
+          ],
+          "acceptedPatterns": [
+            "^git commit -m (\"[^\"]+\"|'[^']+'|[^\\s\"']+)$"
+          ],
+          "boxStateBefore": "staged",
+          "boxStateAfter": "committed",
+          "boxLabel": "first version",
+          "cat": {
+            "intro": "The box is ready! Now we save this version. Git asks for a short message that says what changed, so we can find it later.",
+            "task": "Cast the save spell with the message \"first version\": git commit -m \"first version\"",
+            "hint": "git, then commit, then -m (m for message), then your message inside quotes.",
+            "success": "A sticker appeared on the box! This version is saved forever, with your message on it.",
+            "failure": "The sticker didn't stick. Try: git commit -m \"first version\""
+          },
+          "commonMistakes": [
+            {
+              "input": "git commit",
+              "feedback": "Without -m, Git opens a text editor and waits for a message. Add -m and the message right after it."
+            },
+            {
+              "input": "git commit -m",
+              "feedback": "You said -m but forgot the message! Write it after -m, inside quotes."
+            },
+            {
+              "input": "git commit -m \"\"",
+              "feedback": "An empty sticker? Git refuses to save without a message. Write a few words inside the quotes."
+            },
+            {
+              "input": "git commit \"first version\"",
+              "feedback": "Git needs -m before the message, so it knows the words are a message."
+            },
+            {
+              "input": "git comit -m \"first version\"",
+              "feedback": "So close! commit has two m's."
+            },
+            {
+              "input": "git commit -m first version",
+              "feedback": "A message with spaces needs quotes around it: \"first version\""
+            }
+          ],
+          "verifiedBy": "",
+          "verifiedOn": ""
+        }
+      ]
+    },
+    {
+      "_comment": "STATION 3 · THE CARGO PARKING (Local Repo → Remote) · Sprint 2. Four lessons in order: name the branch main, set the truck GPS (remote add), check the GPS (remote -v), send the truck (push). The id stays 'charging' because scenes.js uses it.",
+      "id": "charging",
+      "order": 3,
+      "title": "The Cargo Parking",
+      "background": "scenes/charging.png",
+      "repoUrl": "https://github.com/gg-city/cat-software.git",
+      "gpsLabel": "GPS · destination",
+      "_comment_truck": "Read by S2 (scenes.js): repoUrl is the address the truck's GPS shows, gpsLabel is the title on the GPS screen.",
+      "story": "The truck waits in the cargo parking. Its GPS has no address yet. We give the branch its name, set the GPS to the repository on GitHub, check the address, then load the box and send the truck.",
+      "lessons": [
+        {
+          "_comment": "Station 3 · Lesson 1/4 · git branch -M main: renames the branch from master to main, so the push in lesson 4 works on a real computer. Box does not change.",
+          "id": "charging-branch",
+          "order": 1,
+          "concept": "Name the main branch",
+          "command": "git branch -M main",
+          "accepted": [
+            "git branch -M main",
+            "git branch -m main"
+          ],
+          "boxStateBefore": "committed",
+          "boxStateAfter": "committed",
+          "cat": {
+            "intro": "This is the cargo parking, and that's our truck! On many computers Git calls the first branch master, but GitHub expects main.",
+            "task": "Cast the spell that renames my branch to main.",
+            "hint": "git, then branch, then -M (it means move or rename), then the new name: main.",
+            "success": "Done! My branch is called main now, just like GitHub expects.",
+            "failure": "The name didn't change. Try: git branch -M main"
+          },
+          "commonMistakes": [
+            {
+              "input": "git branch main",
+              "feedback": "That makes a NEW branch called main, but doesn't rename mine. Add -M before the name."
+            },
+            {
+              "input": "git branch -M Main",
+              "feedback": "Names are case-sensitive! GitHub uses main in small letters."
+            },
+            {
+              "input": "git checkout main",
+              "feedback": "There's no branch called main yet to switch to. We need to rename ours with git branch -M main."
+            }
+          ],
+          "verifiedBy": "",
+          "verifiedOn": ""
+        },
+        {
+          "_comment": "Station 3 · Lesson 2/4 · git remote add origin <URL>: sets the truck GPS to the GitHub repository. effect 'truck-gps-on' tells S3 to switch on the GPS screen.",
+          "id": "charging-remote-add",
+          "order": 2,
+          "concept": "Connect to a remote repository",
+          "command": "git remote add origin https://github.com/gg-city/cat-software.git",
+          "accepted": [
+            "git remote add origin https://github.com/gg-city/cat-software.git"
+          ],
+          "boxStateBefore": "committed",
+          "boxStateAfter": "committed",
+          "effect": "truck-gps-on",
+          "cat": {
+            "intro": "The truck's GPS is empty, so it doesn't know where GitHub is! We give it the address of our repository and call it origin.",
+            "task": "Set the GPS: git remote add origin https://github.com/gg-city/cat-software.git",
+            "hint": "git remote add, then a nickname (origin), then the address.",
+            "success": "The GPS is on! The truck knows the way to our repository on GitHub.",
+            "failure": "The GPS is still dark. Check every word and the address."
+          },
+          "commonMistakes": [
+            {
+              "input": "git remote add origin",
+              "feedback": "Origin is the nickname, but where's the address? Add the link after it."
+            },
+            {
+              "input": "git remote add https://github.com/gg-city/cat-software.git",
+              "feedback": "The address needs a nickname before it. Git uses origin."
+            },
+            {
+              "input": "git remote origin https://github.com/gg-city/cat-software.git",
+              "feedback": "You forgot add! The spell is git remote add origin and then the address."
+            },
+            {
+              "input": "git add remote origin https://github.com/gg-city/cat-software.git",
+              "feedback": "The words are in the wrong order: remote comes first, then add."
+            }
+          ],
+          "verifiedBy": "",
+          "verifiedOn": ""
+        },
+        {
+          "_comment": "Station 3 · Lesson 3/4 · git remote -v: shows the address (fetch and push lines). effect 'truck-gps-flash' makes the GPS screen flash.",
+          "id": "charging-remote-v",
+          "order": 3,
+          "concept": "Check the remote address",
+          "command": "git remote -v",
+          "accepted": [
+            "git remote -v",
+            "git remote --verbose"
+          ],
+          "boxStateBefore": "committed",
+          "boxStateAfter": "committed",
+          "effect": "truck-gps-flash",
+          "cat": {
+            "intro": "Before the truck leaves, a good driver checks the GPS.",
+            "task": "Cast the spell that shows where origin points to.",
+            "hint": "git remote, then -v (v for verbose, which means show me the details).",
+            "success": "Two lines: one for fetch (bringing things in) and one for push (sending things out). Both point to our GitHub repository. We're ready!",
+            "failure": "The GPS didn't light up. Try: git remote -v"
+          },
+          "commonMistakes": [
+            {
+              "input": "git remote",
+              "feedback": "That only shows the nickname (origin). Add -v to see the address too."
+            },
+            {
+              "input": "git remote -V",
+              "feedback": "Careful! It's a small v."
+            },
+            {
+              "input": "git remote -verbose",
+              "feedback": "Long words need two dashes: --verbose. Or just use -v."
+            }
+          ],
+          "verifiedBy": "",
+          "verifiedOn": ""
+        },
+        {
+          "_comment": "Station 3 · Lesson 4/4 · git push -u origin main: loads the box and the truck drives to GitHub. Box: committed → pushed. effect 'truck-drive' tells S3 to load and drive the truck.",
+          "id": "charging-push",
+          "order": 4,
+          "concept": "Send commits to the remote",
+          "command": "git push -u origin main",
+          "accepted": [
+            "git push -u origin main",
+            "git push origin main",
+            "git push --set-upstream origin main"
+          ],
+          "boxStateBefore": "committed",
+          "boxStateAfter": "pushed",
+          "effect": "truck-drive",
+          "cat": {
+            "intro": "Everything is ready: the box is saved, and the GPS knows the way. Time to send it!",
+            "task": "Load the box and send the truck: git push -u origin main",
+            "hint": "git push, then -u (remember this route), then where to (origin), then which branch (main).",
+            "success": "The truck is on its way! My software is going to GitHub, where everyone can see it.",
+            "failure": "The truck didn't move. Try: git push -u origin main"
+          },
+          "commonMistakes": [
+            {
+              "input": "git push",
+              "feedback": "Git doesn't know where to send it yet. The first time, say where and which branch: git push -u origin main"
+            },
+            {
+              "input": "git push origin master",
+              "feedback": "Our branch is called main now, not master."
+            },
+            {
+              "input": "git push main",
+              "feedback": "You forgot where to send it! Put origin before main."
+            },
+            {
+              "input": "git pull origin main",
+              "feedback": "pull brings things FROM GitHub. To send things TO GitHub we use push."
+            }
+          ],
+          "verifiedBy": "",
+          "verifiedOn": ""
         }
       ]
     }
