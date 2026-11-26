@@ -123,8 +123,8 @@
               "feedback": "Every Git spell starts with its magic word: git!"
             }
           ],
-          "verifiedBy": "",
-          "verifiedOn": ""
+          "verifiedBy": "P3",
+          "verifiedOn": "26-11-2026"
         },
         {
           "_comment": "Station 2 · Lesson 2/2 · git commit -m: saves a version with a message. Box: staged → committed (sticker shows the message). acceptedPatterns is ready for C3: any non-empty message.",
@@ -177,8 +177,8 @@
               "feedback": "A message with spaces needs quotes around it: \"first version\""
             }
           ],
-          "verifiedBy": "",
-          "verifiedOn": ""
+          "verifiedBy": "P3",
+          "verifiedOn": "26-11-2026"
         }
       ]
     },
@@ -226,8 +226,8 @@
               "feedback": "There's no branch called main yet to switch to. We need to rename ours with git branch -M main."
             }
           ],
-          "verifiedBy": "",
-          "verifiedOn": ""
+          "verifiedBy": "P3",
+          "verifiedOn": "26-11-2026"
         },
         {
           "_comment": "Station 3 · Lesson 2/4 · git remote add origin <URL>: sets the truck GPS to the GitHub repository. effect 'truck-gps-on' tells S3 to switch on the GPS screen.",
@@ -266,8 +266,8 @@
               "feedback": "The words are in the wrong order: remote comes first, then add."
             }
           ],
-          "verifiedBy": "",
-          "verifiedOn": ""
+          "verifiedBy": "P3",
+          "verifiedOn": "26-11-2026"
         },
         {
           "_comment": "Station 3 · Lesson 3/4 · git remote -v: shows the address (fetch and push lines). effect 'truck-gps-flash' makes the GPS screen flash.",
@@ -303,8 +303,8 @@
               "feedback": "Long words need two dashes: --verbose. Or just use -v."
             }
           ],
-          "verifiedBy": "",
-          "verifiedOn": ""
+          "verifiedBy": "P3",
+          "verifiedOn": "26-11-2026"
         },
         {
           "_comment": "Station 3 · Lesson 4/4 · git push -u origin main: loads the box and the truck drives to GitHub. Box: committed → pushed. effect 'truck-drive' tells S3 to load and drive the truck.",
@@ -345,8 +345,8 @@
               "feedback": "pull brings things FROM GitHub. To send things TO GitHub we use push."
             }
           ],
-          "verifiedBy": "",
-          "verifiedOn": ""
+          "verifiedBy": "P3",
+          "verifiedOn": "26-11-2026"
         }
       ]
     }
