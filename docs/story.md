@@ -4,7 +4,7 @@ The beginning. The cat is on his desk, along with the software box. The command 
 # The Backyard
 "git add" places the box in the yard to get it ready. "git commit -m" affixes a label to it describing what has changed, so that it is preserved as a version.
 
-# The Shipping Parking
+# The Cargo Parking
 There is the truck. If it has no destination, "git remote add origin" sets the GPS to the address of the repository on GitHub. "git remote -v" displays the destination for confirmation. "git push" loads the boxes into the truck, and it sets off.
 
 # Main Warehouse
